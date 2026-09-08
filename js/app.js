@@ -1,6 +1,6 @@
 import { db } from "./db.js";
 import { requireSession } from "./auth.js";
-import { AREAS, STATUS, HAMPER_CATEGORIES, GENERAL_NOTES } from "./seed-data.js";
+import { AREAS, STATUS, GENERAL_NOTES } from "./seed-data.js";
 import {
   uid, todayISO, parseISO, formatDatePT, formatMonthLabel, isoWeekToDate,
   effectiveStatus, escapeHtml, groupBy, MONTHS_PT,
@@ -27,19 +27,18 @@ const NAV = [
   { id: "actions", label: "Ações", icon: "check" },
   { id: "warehouse", label: "Armazém & Fornecedores", icon: "box" },
   { id: "marketing", label: "Marketing", icon: "megaphone" },
-  { id: "hampers", label: "Cabazes", icon: "gift" },
   { id: "windows", label: "Montras", icon: "window" },
   { id: "lessons", label: "Lições 2025", icon: "book" },
 ];
 
 async function loadAll() {
-  const [actions, suppliers, stores, events, marketingPosts, hampers, windowJobs, windowTeam, restockRules, restockShipments, lessons, stockItems] =
+  const [actions, suppliers, stores, events, marketingPosts, windowJobs, windowTeam, restockRules, restockShipments, lessons, stockItems] =
     await Promise.all([
       db.actions.list(), db.suppliers.list(), db.stores.list(), db.events.list(),
-      db.marketingPosts.list(), db.hampers.list(), db.windowJobs.list(), db.windowTeam.list(),
+      db.marketingPosts.list(), db.windowJobs.list(), db.windowTeam.list(),
       db.restockRules.list(), db.restockShipments.list(), db.lessons.list(), db.stockItems.list(),
     ]);
-  CACHE = { actions, suppliers, stores, events, marketingPosts, hampers, windowJobs, windowTeam, restockRules, restockShipments, lessons, stockItems };
+  CACHE = { actions, suppliers, stores, events, marketingPosts, windowJobs, windowTeam, restockRules, restockShipments, lessons, stockItems };
 }
 
 function iconSvg(name) {
@@ -903,55 +902,6 @@ function postFormHtml(p) {
   `;
 }
 
-// ---------- HAMPERS (Cabazes) ----------
-function renderHampers() {
-  const { hampers } = CACHE;
-  return `
-    <header class="view-header">
-      <div>
-        <h1>Cabazes</h1>
-        <p class="muted">Definição dos 6 cabazes-base da época — produtos, marcas e embalagem</p>
-      </div>
-    </header>
-
-    <div class="callout">Categorias de referência: ${HAMPER_CATEGORIES.join(", ")}.</div>
-
-    <div class="hamper-grid">
-      ${hampers.map((h) => `
-        <div class="hamper-card" data-id="${h.id}">
-          <div class="hamper-card-header">
-            <input type="text" class="hamper-name" data-hamper-name="${h.id}" value="${escapeHtml(h.name)}" />
-            <span class="badge badge-supplier-${h.status}">${supplierStatusLabel(h.status)}</span>
-          </div>
-          <div class="hamper-items">
-            ${(h.items || []).map((it, idx) => `
-              <div class="hamper-item">
-                <span>${escapeHtml(it.category)}: ${escapeHtml(it.product)}</span>
-                <button class="icon-btn icon-btn-danger" data-remove-item="${h.id}" data-item-idx="${idx}">✕</button>
-              </div>
-            `).join("") || '<p class="muted small">Sem produtos definidos.</p>'}
-          </div>
-          <form class="hamper-add-item" data-hamper-id="${h.id}">
-            <select name="category">${HAMPER_CATEGORIES.map((c) => `<option>${c}</option>`).join("")}</select>
-            <input type="text" name="product" placeholder="Marca / produto" required />
-            <button type="submit" class="btn btn-sm">Adicionar</button>
-          </form>
-          <div class="form-row" style="margin-top:8px">
-            <label class="small">Preço (€)<input type="number" step="0.01" data-hamper-price="${h.id}" value="${h.price ?? ""}" /></label>
-            <label class="small">Embalagem<input type="text" data-hamper-packaging="${h.id}" value="${escapeHtml(h.packaging || "")}" /></label>
-          </div>
-          <label class="small">Estado
-            <select data-hamper-status="${h.id}">
-              <option value="por_definir" ${h.status === "por_definir" ? "selected" : ""}>Por definir</option>
-              <option value="confirmado" ${h.status === "confirmado" ? "selected" : ""}>Fechado</option>
-            </select>
-          </label>
-        </div>
-      `).join("")}
-    </div>
-  `;
-}
-
 // ---------- WINDOWS (Montras) ----------
 function renderWindows() {
   const { windowJobs, windowTeam } = CACHE;
@@ -1132,7 +1082,7 @@ function render() {
 
   const renderers = {
     dashboard: renderDashboard, calendar: renderCalendar, actions: renderActions,
-    warehouse: renderWarehouse, marketing: renderMarketing, hampers: renderHampers,
+    warehouse: renderWarehouse, marketing: renderMarketing,
     windows: renderWindows, lessons: renderLessons,
   };
   view.innerHTML = (renderers[route] || renderDashboard)();
@@ -1333,42 +1283,6 @@ function bindEvents(route, view) {
     view.querySelectorAll("[data-del-post]").forEach((btn) => {
       btn.onclick = async () => {
         if (await confirmDelete("Eliminar este post?")) { await db.marketingPosts.remove(btn.dataset.delPost); toast("Post eliminado."); await refresh(); }
-      };
-    });
-  }
-
-  if (route === "hampers") {
-    view.querySelectorAll("[data-hamper-name]").forEach((input) => {
-      input.onchange = async () => { await db.hampers.update(input.dataset.hamperName, { name: input.value }); };
-    });
-    view.querySelectorAll("[data-hamper-price]").forEach((input) => {
-      input.onchange = async () => { await db.hampers.update(input.dataset.hamperPrice, { price: input.value ? Number(input.value) : null }); };
-    });
-    view.querySelectorAll("[data-hamper-packaging]").forEach((input) => {
-      input.onchange = async () => { await db.hampers.update(input.dataset.hamperPackaging, { packaging: input.value }); };
-    });
-    view.querySelectorAll("[data-hamper-status]").forEach((sel) => {
-      sel.onchange = async () => { await db.hampers.update(sel.dataset.hamperStatus, { status: sel.value }); await refresh(); };
-    });
-    view.querySelectorAll(".hamper-add-item").forEach((form) => {
-      form.onsubmit = async (e) => {
-        e.preventDefault();
-        const hamperId = form.dataset.hamperId;
-        const h = CACHE.hampers.find((x) => x.id === hamperId);
-        const fd = new FormData(form);
-        const items = [...(h.items || []), { category: fd.get("category"), product: fd.get("product") }];
-        await db.hampers.update(hamperId, { items });
-        await refresh();
-      };
-    });
-    view.querySelectorAll("[data-remove-item]").forEach((btn) => {
-      btn.onclick = async () => {
-        const hamperId = btn.dataset.removeItem;
-        const idx = Number(btn.dataset.itemIdx);
-        const h = CACHE.hampers.find((x) => x.id === hamperId);
-        const items = (h.items || []).filter((_, i) => i !== idx);
-        await db.hampers.update(hamperId, { items });
-        await refresh();
       };
     });
   }
