@@ -173,26 +173,36 @@ a { color: hsl(var(--primary)); text-decoration: none; }
 .multiselect { position: relative; }
 .multiselect-toggle { white-space: nowrap; }
 .multiselect-panel {
-  position: absolute; top: calc(100% + 4px); left: 0; z-index: 20;
+  position: absolute; top: calc(100% + 4px); right: 0; z-index: 20;
   background: #fff; border: 1px solid hsl(var(--border)); border-radius: 10px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.12); width: 240px; max-height: 280px;
-  overflow-y: auto; overflow-x: hidden; padding: 6px; box-sizing: border-box;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12); width: 240px; max-width: calc(100vw - 32px);
+  max-height: 280px; overflow-y: auto; overflow-x: hidden; padding: 6px; box-sizing: border-box;
 }
 .multiselect-option {
-  display: flex; flex-direction: row; align-items: center; gap: 8px; padding: 7px 8px; border-radius: 6px;
+  display: grid; grid-template-columns: 16px 1fr; align-items: center; gap: 8px;
+  padding: 7px 8px; border-radius: 6px;
   font-size: 0.85rem; font-weight: 400; cursor: pointer; margin-bottom: 0;
   width: 100%; box-sizing: border-box;
 }
 .multiselect-option:hover { background: hsl(var(--secondary)); }
 .multiselect-option input[type="checkbox"] {
-  flex: 0 0 16px; width: 16px; height: 16px; margin: 0; padding: 0; accent-color: hsl(var(--primary));
+  appearance: none; -webkit-appearance: none; margin: 0; padding: 0;
+  width: 16px; height: 16px; border: 1.5px solid hsl(var(--border)); border-radius: 4px;
+  background: #fff; cursor: pointer; position: relative; flex: none;
 }
-.multiselect-option-label { flex: 1; min-width: 0; overflow-wrap: break-word; }
+.multiselect-option input[type="checkbox"]:checked {
+  background: hsl(var(--primary)); border-color: hsl(var(--primary));
+}
+.multiselect-option input[type="checkbox"]:checked::after {
+  content: ""; position: absolute; left: 4px; top: 0px; width: 4px; height: 8px;
+  border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg);
+}
+.multiselect-option-label { min-width: 0; overflow-wrap: break-word; }
 
 /* ---------- Toolbar / forms ---------- */
 .toolbar { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
-.toolbar input, .toolbar select { padding: 8px 12px; border-radius: 8px; border: 1px solid hsl(var(--border)); font-family: inherit; font-size: 0.85rem; background: #fff; }
-.toolbar input { flex: 1; min-width: 200px; }
+.toolbar > input, .toolbar > select { padding: 8px 12px; border-radius: 8px; border: 1px solid hsl(var(--border)); font-family: inherit; font-size: 0.85rem; background: #fff; }
+.toolbar > input { flex: 1; min-width: 200px; }
 
 label { display: flex; flex-direction: column; gap: 4px; font-size: 0.82rem; font-weight: 600; color: hsl(20 15% 30%); margin-bottom: 12px; }
 label.small { font-size: 0.75rem; }
