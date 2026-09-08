@@ -1,6 +1,5 @@
 import { db } from "./db.js";
 import { requireSession } from "./auth.js";
-import { MOCK_MODE } from "./config.js";
 import { AREAS, STATUS, HAMPER_CATEGORIES, GENERAL_NOTES } from "./seed-data.js";
 import {
   uid, todayISO, parseISO, formatDatePT, formatMonthLabel, isoWeekToDate,
@@ -80,9 +79,6 @@ function shell() {
               <span class="nav-icon">${iconSvg(n.icon)}</span>${n.label}
             </a>`).join("")}
         </nav>
-        <div class="sidebar-footer">
-          ${MOCK_MODE ? '<div class="mode-pill">Modo local (sem BD partilhada)</div>' : '<div class="mode-pill mode-pill-live">Ligado ao Supabase</div>'}
-        </div>
       </aside>
       <main class="content" id="view"></main>
     </div>

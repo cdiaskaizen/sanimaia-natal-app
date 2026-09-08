@@ -170,9 +170,11 @@ input, select, textarea {
   font-family: inherit; font-size: 0.88rem; font-weight: 400;
   padding: 8px 10px; border-radius: 8px; border: 1px solid hsl(var(--border));
   background: #fff; color: hsl(var(--foreground));
+  width: 100%; box-sizing: border-box;
 }
 textarea { resize: vertical; }
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; min-width: 0; }
+.form-row > * { min-width: 0; }
 
 /* ---------- Badges / status ---------- */
 .badge { display: inline-flex; align-items: center; font-size: 0.72rem; font-weight: 700; padding: 3px 10px; border-radius: 999px; }
@@ -245,7 +247,7 @@ tr:last-child td { border-bottom: none; }
 
 /* ---------- Hampers ---------- */
 .hamper-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
-.hamper-card { background: hsl(var(--card)); border: 1px solid hsl(var(--border)); border-radius: var(--radius); padding: 16px; }
+.hamper-card { background: hsl(var(--card)); border: 1px solid hsl(var(--border)); border-radius: var(--radius); padding: 16px; min-width: 0; overflow: hidden; }
 .hamper-card-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
 .hamper-name { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1rem; border: none; background: transparent; padding: 2px 0; flex: 1; }
 .hamper-items { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; min-height: 20px; }
