@@ -529,7 +529,10 @@ function renderCommentsList(comments) {
   return list.slice().reverse().map((c) => `
     <div class="comment-row">
       <div class="comment-text">${escapeHtml(c.text)}</div>
-      <div class="comment-meta">${formatDateTimePT(c.created_at)}</div>
+      <div class="comment-meta">
+        ${formatDateTimePT(c.created_at)}
+        <button type="button" class="icon-btn icon-btn-danger comment-delete" data-comment-id="${c.id}" title="Eliminar comentário">🗑</button>
+      </div>
     </div>
   `).join("");
 }
@@ -537,22 +540,40 @@ function renderCommentsList(comments) {
 function wireCommentBox(a) {
   const btn = document.getElementById("add-comment-btn");
   const input = document.getElementById("new-comment-input");
-  if (!btn || !input) return;
-  const submit = async () => {
-    const text = input.value.trim();
-    if (!text) return;
-    const comment = { id: uid(), text, created_at: new Date().toISOString() };
-    const updated = [...(a.comments || []), comment];
+  const list = document.getElementById("comments-list");
+  if (!btn || !input || !list) return;
+
+  const persistAndRerender = async (updated) => {
     a.comments = updated;
     const cached = CACHE.actions.find((x) => x.id === a.id);
     if (cached) cached.comments = updated;
     await db.actions.update(a.id, { comments: updated });
     document.getElementById("comments-list").innerHTML = renderCommentsList(updated);
+    bindCommentDeleteButtons(a);
+  };
+
+  const submit = async () => {
+    const text = input.value.trim();
+    if (!text) return;
+    const comment = { id: uid(), text, created_at: new Date().toISOString() };
+    await persistAndRerender([...(a.comments || []), comment]);
     input.value = "";
     input.focus();
   };
   btn.onclick = submit;
   input.onkeydown = (e) => { if (e.key === "Enter") { e.preventDefault(); submit(); } };
+
+  bindCommentDeleteButtons(a, persistAndRerender);
+}
+
+function bindCommentDeleteButtons(a, persistAndRerender) {
+  document.querySelectorAll(".comment-delete").forEach((btn) => {
+    btn.onclick = async () => {
+      if (!window.confirm("Eliminar este comentário?")) return;
+      const updated = (a.comments || []).filter((c) => c.id !== btn.dataset.commentId);
+      await persistAndRerender(updated);
+    };
+  });
 }
 
 function openActionEditModal(a) {
