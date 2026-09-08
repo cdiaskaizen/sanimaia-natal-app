@@ -395,7 +395,7 @@ function renderActions() {
           ${people.map((p) => `
             <label class="multiselect-option">
               <input type="checkbox" value="${escapeHtml(p)}" ${actionFilters.responsibles.includes(p) ? "checked" : ""} />
-              ${escapeHtml(p)}
+              <span class="multiselect-option-label">${escapeHtml(p)}</span>
             </label>
           `).join("") || '<p class="muted small" style="padding:8px 12px">Sem responsáveis ainda.</p>'}
         </div>
