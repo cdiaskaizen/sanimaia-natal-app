@@ -20,13 +20,16 @@ async function loadPhcSnapshot() {
   }
 }
 
+// Páginas escondidas do menu por agora (a pedido) — os dados e as rotas
+// continuam a funcionar, só não aparecem na barra lateral. Para voltar a
+// mostrar, basta apagar "hidden: true" na respetiva linha.
 const NAV = [
   { id: "dashboard", label: "Dashboard", icon: "grid" },
   { id: "actions", label: "Ações", icon: "check" },
-  { id: "warehouse", label: "Armazém & Fornecedores", icon: "box" },
-  { id: "marketing", label: "Marketing", icon: "megaphone" },
-  { id: "windows", label: "Montras", icon: "window" },
-  { id: "lessons", label: "Lições 2025", icon: "book" },
+  { id: "warehouse", label: "Armazém & Fornecedores", icon: "box", hidden: true },
+  { id: "marketing", label: "Marketing", icon: "megaphone", hidden: true },
+  { id: "windows", label: "Montras", icon: "window", hidden: true },
+  { id: "lessons", label: "Lições 2025", icon: "book", hidden: true },
 ];
 
 async function loadAll() {
@@ -71,7 +74,7 @@ function shell() {
           </div>
         </div>
         <nav class="nav">
-          ${NAV.map((n) => `
+          ${NAV.filter((n) => !n.hidden).map((n) => `
             <a href="#${n.id}" class="nav-item ${route === n.id ? "active" : ""}">
               <span class="nav-icon">${iconSvg(n.icon)}</span>${n.label}
             </a>`).join("")}
