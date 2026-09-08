@@ -238,6 +238,8 @@ textarea { resize: vertical; }
 }
 .cal-cell-empty { background: transparent; border: none; }
 .cal-cell-today { border-color: hsl(var(--primary)); box-shadow: 0 0 0 1px hsl(var(--primary)); }
+.cal-cell-addable { cursor: pointer; transition: background 0.1s; }
+.cal-cell-addable:hover { background: hsl(var(--secondary) / 0.6); }
 .cal-daynum { font-size: 0.75rem; font-weight: 700; color: hsl(var(--muted)); margin-bottom: 4px; flex-shrink: 0; }
 .cal-chips { display: flex; flex-direction: column; gap: 3px; min-height: 0; overflow-y: auto; }
 .cal-chip {

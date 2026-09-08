@@ -60,6 +60,7 @@ create table if not exists sanimaia_natal_events (
   id uuid primary key default gen_random_uuid(),
   title text not null,
   date date not null,
+  end_date date, -- opcional: evento de vários dias (null = só um dia)
   flagged boolean not null default false,
   notes text,
   created_at timestamptz not null default now()

@@ -209,9 +209,18 @@ function buildCalendarItems(year, month) {
     }
   }
   for (const e of CACHE.events) {
-    const d = parseISO(e.date);
-    if (d.getFullYear() === year && d.getMonth() === month) {
-      items.push({ kind: "event", id: e.id, date: e.date, precision: "day", title: e.title, meta: e.flagged ? "⚠ data por confirmar" : "", color: "#b5384d", ref: e });
+    const start = parseISO(e.date);
+    const end = parseISO(e.end_date || e.date);
+    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+      if (d.getFullYear() === year && d.getMonth() === month) {
+        const isMultiDay = e.end_date && e.end_date !== e.date;
+        const dayIso = d.toISOString().slice(0, 10);
+        items.push({
+          kind: "event", id: e.id, date: dayIso, precision: "day", title: e.title,
+          meta: e.flagged ? "⚠ data por confirmar" : (isMultiDay ? `${formatDatePT(e.date)} — ${formatDatePT(e.end_date)}` : ""),
+          color: "#b5384d", ref: e,
+        });
+      }
     }
   }
   for (const p of CACHE.marketingPosts) {
@@ -256,7 +265,7 @@ function renderCalendar() {
     const iso = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
     const isToday = iso === todayIso;
     const dayList = byDay[day] || [];
-    cells += `<div class="cal-cell ${isToday ? "cal-cell-today" : ""}">
+    cells += `<div class="cal-cell cal-cell-addable ${isToday ? "cal-cell-today" : ""}" data-day="${iso}" title="Clicar para criar um evento neste dia">
       <div class="cal-daynum">${day}</div>
       <div class="cal-chips">
         ${dayList.slice(0, 3).map((i) => `<div class="cal-chip cal-chip-clickable" data-cal-kind="${i.kind}" data-cal-id="${i.id}" style="background:${i.color}22;border-left:3px solid ${i.color}" title="${escapeHtml(i.title)} (clicar para editar)">${escapeHtml(i.title)}</div>`).join("")}
@@ -311,12 +320,23 @@ function storeFormHtml(s) {
 }
 
 function eventFormHtml(e) {
-  const v = e || { title: "", date: "", flagged: false, notes: "" };
+  const v = e || { title: "", date: "", end_date: "", flagged: false, notes: "" };
   return `
     <label>Título<input type="text" name="title" value="${escapeHtml(v.title)}" required /></label>
-    <label>Data<input type="date" name="date" value="${v.date || ""}" required /></label>
+    <div class="form-row">
+      <label>Data de início<input type="date" name="date" value="${v.date || ""}" required /></label>
+      <label>Data de fim (opcional, para vários dias)<input type="date" name="end_date" value="${v.end_date || ""}" /></label>
+    </div>
     <label>Notas<textarea name="notes" rows="2">${escapeHtml(v.notes || "")}</textarea></label>
   `;
+}
+
+function openNewEventModal(prefillDate) {
+  openModal({
+    title: "Novo evento",
+    bodyHtml: eventFormHtml(prefillDate ? { title: "", date: prefillDate, end_date: "", notes: "" } : null),
+    onSubmit: async (data) => { await db.events.insert({ ...data, end_date: data.end_date || null, flagged: false }); toast("Evento criado."); },
+  });
 }
 
 function openCalendarItem(kind, id) {
@@ -328,7 +348,7 @@ function openCalendarItem(kind, id) {
     openModal({ title: "Editar loja", bodyHtml: storeFormHtml(s), onSubmit: async (data) => { await db.stores.update(s.id, data); toast("Loja atualizada."); } });
   } else if (kind === "event") {
     const e = CACHE.events.find((x) => x.id === id);
-    openModal({ title: "Editar evento", bodyHtml: eventFormHtml(e), onSubmit: async (data) => { await db.events.update(e.id, { ...data, flagged: e.flagged }); toast("Evento atualizado."); } });
+    openModal({ title: "Editar evento", bodyHtml: eventFormHtml(e), onSubmit: async (data) => { await db.events.update(e.id, { ...data, end_date: data.end_date || null, flagged: e.flagged }); toast("Evento atualizado."); } });
   } else if (kind === "marketing") {
     const p = CACHE.marketingPosts.find((x) => x.id === id);
     openModal({ title: "Editar post/campanha", bodyHtml: postFormHtml(p), onSubmit: async (data) => { await db.marketingPosts.update(p.id, data); toast("Post atualizado."); } });
@@ -1104,11 +1124,15 @@ function bindEvents(route, view) {
     document.getElementById("cal-add-store").onclick = () => {
       openModal({ title: "Nova loja", bodyHtml: storeFormHtml(null), onSubmit: async (data) => { await db.stores.insert(data); toast("Loja criada."); } });
     };
-    document.getElementById("cal-add-event").onclick = () => {
-      openModal({ title: "Novo evento", bodyHtml: eventFormHtml(null), onSubmit: async (data) => { await db.events.insert({ ...data, flagged: false }); toast("Evento criado."); } });
-    };
+    document.getElementById("cal-add-event").onclick = () => openNewEventModal(null);
     view.querySelectorAll("[data-cal-kind]").forEach((el) => {
-      el.onclick = () => openCalendarItem(el.dataset.calKind, el.dataset.calId);
+      el.onclick = (e) => { e.stopPropagation(); openCalendarItem(el.dataset.calKind, el.dataset.calId); };
+    });
+    view.querySelectorAll(".cal-cell-addable").forEach((cell) => {
+      cell.onclick = (e) => {
+        if (e.target.closest("[data-cal-kind]")) return;
+        openNewEventModal(cell.dataset.day);
+      };
     });
   }
 
