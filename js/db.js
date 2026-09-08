@@ -76,12 +76,16 @@ function mockApi(collection) {
   };
 }
 
-let supabaseClient = null;
+// Memoiza a PROMESSA (não só o valor) para evitar que chamadas em paralelo
+// (loadAll() dispara ~12 pedidos ao mesmo tempo) criem várias instâncias do
+// cliente Supabase antes da primeira terminar de carregar.
+let supabaseClientPromise = null;
 async function getSupabase() {
-  if (supabaseClient) return supabaseClient;
-  const { createClient } = await import("https://esm.sh/@supabase/supabase-js@2");
-  supabaseClient = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
-  return supabaseClient;
+  if (!supabaseClientPromise) {
+    supabaseClientPromise = import("https://esm.sh/@supabase/supabase-js@2")
+      .then(({ createClient }) => createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY));
+  }
+  return supabaseClientPromise;
 }
 
 function liveApi(tableName) {
