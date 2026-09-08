@@ -253,8 +253,7 @@ textarea { resize: vertical; }
 .action-card-area { font-size: 0.66rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; color: hsl(var(--muted)); }
 .action-card-title {
   font-size: 0.85rem; font-weight: 600; margin: 4px 0 6px;
-  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
-  overflow: hidden; text-overflow: ellipsis;
+  overflow-wrap: break-word;
 }
 .action-card-meta { display: flex; justify-content: space-between; font-size: 0.74rem; color: hsl(var(--muted)); }
 .action-card-actions { display: flex; justify-content: flex-end; gap: 2px; margin-top: 6px; }
