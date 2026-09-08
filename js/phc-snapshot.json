@@ -1,0 +1,406 @@
+{
+  "generated_at": "2026-09-08T15:32:27",
+  "source": "PHC SQL Server (10.0.0.6/Sanimaia) — leitura direta, sem escrita",
+  "suppliers": {
+    "Andrea Bizzotto": {
+      "skus_familia_natal": 807,
+      "stock_atual": 8522.0,
+      "recebido_2026": 10.0,
+      "ultima_receção": "2026-01-13T00:00:00"
+    },
+    "Nuvole di Stoffa": {
+      "skus_familia_natal": 0,
+      "stock_atual": 0.0,
+      "recebido_2026": 0.0,
+      "ultima_receção": null
+    },
+    "Becky's": {
+      "skus_familia_natal": 82,
+      "stock_atual": 550.0,
+      "recebido_2026": 0.0,
+      "ultima_receção": null
+    },
+    "Boltze": {
+      "skus_familia_natal": 492,
+      "stock_atual": 1079.0,
+      "recebido_2026": 6.0,
+      "ultima_receção": "2026-03-17T00:00:00"
+    },
+    "Räder": {
+      "skus_familia_natal": 481,
+      "stock_atual": 593.0,
+      "recebido_2026": 0.0,
+      "ultima_receção": null
+    },
+    "Cartai Bassanesi": {
+      "skus_familia_natal": 243,
+      "stock_atual": 839.0,
+      "recebido_2026": 5.0,
+      "ultima_receção": "2026-03-24T00:00:00"
+    },
+    "Shishi": {
+      "skus_familia_natal": 346,
+      "stock_atual": 1846.0,
+      "recebido_2026": 0.0,
+      "ultima_receção": null
+    },
+    "Ellegift": {
+      "skus_familia_natal": 73,
+      "stock_atual": 106.0,
+      "recebido_2026": 0.0,
+      "ultima_receção": null
+    },
+    "Vetur": {
+      "skus_familia_natal": 621,
+      "stock_atual": 4095.0,
+      "recebido_2026": 0.0,
+      "ultima_receção": null
+    },
+    "EDG": {
+      "skus_familia_natal": 47,
+      "stock_atual": 3.0,
+      "recebido_2026": 0.0,
+      "ultima_receção": null
+    },
+    "Coopman": {
+      "skus_familia_natal": 0,
+      "stock_atual": 0.0,
+      "recebido_2026": 0.0,
+      "ultima_receção": null
+    },
+    "Royal Christmas / Van der": {
+      "skus_familia_natal": 0,
+      "stock_atual": 0.0,
+      "recebido_2026": 0.0,
+      "ultima_receção": null
+    },
+    "La Galleria": {
+      "skus_familia_natal": 60,
+      "stock_atual": 88.0,
+      "recebido_2026": 0.0,
+      "ultima_receção": null
+    }
+  },
+  "leftover_2025": [
+    {
+      "ref": "1912340000",
+      "product": "Kraft Caixa Gourmet c/Alças 25x25x25 015128",
+      "supplier": "LITEL - Litografia e Embalagens, Lda",
+      "qty_ordered": 120.0,
+      "qty_sold": 0.0,
+      "leftover": 120.0
+    },
+    {
+      "ref": "1933940000",
+      "product": "Made By You Guardanapo 33x33 72885323 Branco",
+      "supplier": "SERVISAN PRODUTOS HIGIENE SA",
+      "qty_ordered": 120.0,
+      "qty_sold": 12.0,
+      "leftover": 108.0
+    },
+    {
+      "ref": "1999991042",
+      "product": "Linha19 X-Mas Saco Verde c/Rolinho Bordo S 25x36",
+      "supplier": "Iris - Irina & Sousa,Lda",
+      "qty_ordered": 121.0,
+      "qty_sold": 73.0,
+      "leftover": 48.0
+    },
+    {
+      "ref": "1999991040",
+      "product": "Linha19 X-Mas Saco Verde c/Rolinho Bordo L 44x55",
+      "supplier": "Iris - Irina & Sousa,Lda",
+      "qty_ordered": 114.0,
+      "qty_sold": 93.0,
+      "leftover": 21.0
+    },
+    {
+      "ref": "1999991041",
+      "product": "Linha19 X-Mas Saco Verde c/Rolinho Bordo M 34x46",
+      "supplier": "Iris - Irina & Sousa,Lda",
+      "qty_ordered": 118.0,
+      "qty_sold": 98.0,
+      "leftover": 20.0
+    },
+    {
+      "ref": "1933490010",
+      "product": "X-Mas Pote c/Tampa Gengibre Ø11 NEW-0608 Branco",
+      "supplier": "ELLEGIFT SOCIETA´ A RESPONSABILITA´ LIMITATA SEMPLIFICA",
+      "qty_ordered": 24.0,
+      "qty_sold": 8.0,
+      "leftover": 16.0
+    },
+    {
+      "ref": "1926617004",
+      "product": "Neva Corações Rosa Colher de Mesa (BD14060PLM_CU/ES)",
+      "supplier": "LINEE DESIGN & PRODUCTION S.R.L.",
+      "qty_ordered": 12.0,
+      "qty_sold": 0.0,
+      "leftover": 12.0
+    },
+    {
+      "ref": "1914170088",
+      "product": "Riscas Copo 24cl TEL-TJ2018 Transp.",
+      "supplier": "Big Bizz -Exp. de Cerámicas Unip.Lda",
+      "qty_ordered": 12.0,
+      "qty_sold": 6.0,
+      "leftover": 6.0
+    },
+    {
+      "ref": "1928730083",
+      "product": "Guardanapo c/ Flor Dourada 45x45 Branco",
+      "supplier": "Raquel João Rodrigues Ferreira da Silva",
+      "qty_ordered": 6.0,
+      "qty_sold": 0.0,
+      "leftover": 6.0
+    },
+    {
+      "ref": "1928730082",
+      "product": "Individual Redondo c/ Flor Dourada 35cm Branco",
+      "supplier": "Raquel João Rodrigues Ferreira da Silva",
+      "qty_ordered": 6.0,
+      "qty_sold": 0.0,
+      "leftover": 6.0
+    },
+    {
+      "ref": "1926617002",
+      "product": "Neva Corações Rosa Faca de Mesa (BD14060PLM_CT/ES)",
+      "supplier": "LINEE DESIGN & PRODUCTION S.R.L.",
+      "qty_ordered": 6.0,
+      "qty_sold": 0.0,
+      "leftover": 6.0
+    },
+    {
+      "ref": "1928730088",
+      "product": "Individual Redondo em Pele Camel",
+      "supplier": "Elsa Renata de Ascenção Almeida",
+      "qty_ordered": 6.0,
+      "qty_sold": 0.0,
+      "leftover": 6.0
+    },
+    {
+      "ref": "1926617003",
+      "product": "Neva Corações Rosa Garfo de Mesa (BD14060PLM_FO/ES)",
+      "supplier": "LINEE DESIGN & PRODUCTION S.R.L.",
+      "qty_ordered": 6.0,
+      "qty_sold": 0.0,
+      "leftover": 6.0
+    },
+    {
+      "ref": "1931630099",
+      "product": "Lobster Bake Set Guardanapos Papel 16480L",
+      "supplier": "CASPARI ApS",
+      "qty_ordered": 12.0,
+      "qty_sold": 7.0,
+      "leftover": 5.0
+    },
+    {
+      "ref": "1931630096",
+      "product": "Grey Blanc des Blancs Set Guardanapos Papel Rect. 15191G",
+      "supplier": "CASPARI ApS",
+      "qty_ordered": 12.0,
+      "qty_sold": 7.0,
+      "leftover": 5.0
+    },
+    {
+      "ref": "1931630100",
+      "product": "Chelsea Birds Set Guardanapos Papel Rect. 16581G",
+      "supplier": "CASPARI ApS",
+      "qty_ordered": 12.0,
+      "qty_sold": 7.0,
+      "leftover": 5.0
+    },
+    {
+      "ref": "1928330176",
+      "product": "Linha19 Linho Bainha Meio Ponto Guard. 50x50 Lilás",
+      "supplier": "BORMARANTE UNIPESSOAL LDA",
+      "qty_ordered": 36.0,
+      "qty_sold": 32.0,
+      "leftover": 4.0
+    },
+    {
+      "ref": "1921860551",
+      "product": "FH Rosti Margrethe Bacia 5lts 29893 Branca",
+      "supplier": "F & H A/S",
+      "qty_ordered": 6.0,
+      "qty_sold": 2.0,
+      "leftover": 4.0
+    },
+    {
+      "ref": "1921864470",
+      "product": "FH Rosti Margrethe Bacia 3lts 29837 Branco New",
+      "supplier": "F & H A/S",
+      "qty_ordered": 6.0,
+      "qty_sold": 2.0,
+      "leftover": 4.0
+    },
+    {
+      "ref": "1921860449",
+      "product": "FH Rosti Margrethe Bacia 2lts 29822 Branca New",
+      "supplier": "F & H A/S",
+      "qty_ordered": 6.0,
+      "qty_sold": 2.0,
+      "leftover": 4.0
+    },
+    {
+      "ref": "1928730087",
+      "product": "Individual Redondo em Pele Bege",
+      "supplier": "Elsa Renata de Ascenção Almeida",
+      "qty_ordered": 6.0,
+      "qty_sold": 2.0,
+      "leftover": 4.0
+    },
+    {
+      "ref": "1933490002",
+      "product": "X-Mas Urso Sentado c/Presente Resina 20cm NEV-0215 Castanho/",
+      "supplier": "ELLEGIFT SOCIETA´ A RESPONSABILITA´ LIMITATA SEMPLIFICA",
+      "qty_ordered": 28.0,
+      "qty_sold": 24.0,
+      "leftover": 4.0
+    },
+    {
+      "ref": "1921864486",
+      "product": "FH Rosti Margrethe Bacia 4lts 29883 Branca",
+      "supplier": "F & H A/S",
+      "qty_ordered": 6.0,
+      "qty_sold": 2.0,
+      "leftover": 4.0
+    },
+    {
+      "ref": "1913030118",
+      "product": "Riva Sarezzo Base p/ Copo Ø9cm RO5983 Cromo",
+      "supplier": "BR Comércio de Utensílios Domésticos Eireli",
+      "qty_ordered": 4.0,
+      "qty_sold": 0.0,
+      "leftover": 4.0
+    },
+    {
+      "ref": "1931630102",
+      "product": "Airlaid Blue Algarve Set Guardanapos Papel 17463LG",
+      "supplier": "CASPARI ApS",
+      "qty_ordered": 12.0,
+      "qty_sold": 8.0,
+      "leftover": 4.0
+    },
+    {
+      "ref": "1926890009",
+      "product": "Mistura Queijo (120g)",
+      "supplier": "SEGMENTPORTABLE - UNIPESSOAL LDA",
+      "qty_ordered": 32.0,
+      "qty_sold": 28.0,
+      "leftover": 4.0
+    },
+    {
+      "ref": "1929870008",
+      "product": "Almofada de Enchimento 40x55cm CO IN 40X55 Poliester",
+      "supplier": "ELITIS",
+      "qty_ordered": 3.0,
+      "qty_sold": 0.0,
+      "leftover": 3.0
+    },
+    {
+      "ref": "1933490004",
+      "product": "X-Mas Urso no Cavalo Baloiço em Resina 25x7x32 NEV-0633 Bran",
+      "supplier": "ELLEGIFT SOCIETA´ A RESPONSABILITA´ LIMITATA SEMPLIFICA",
+      "qty_ordered": 10.0,
+      "qty_sold": 7.0,
+      "leftover": 3.0
+    },
+    {
+      "ref": "1927790015",
+      "product": "Abajur Circular 40x25 Taupe",
+      "supplier": "M. CAMPOS SILVA - ESTOFOS, LDA",
+      "qty_ordered": 2.0,
+      "qty_sold": 0.0,
+      "leftover": 2.0
+    },
+    {
+      "ref": "1919040019",
+      "product": "Páscoa Figuras Biscoitos APPACDM (130gr)",
+      "supplier": "APPACDM DA TROFA",
+      "qty_ordered": 234.0,
+      "qty_sold": 232.0,
+      "leftover": 2.0
+    },
+    {
+      "ref": "1913030164",
+      "product": "Riva Sarezzo Pote Vidro c/ Tampa Ametista Ø12x6cm GO5574 Our",
+      "supplier": "BR Comércio de Utensílios Domésticos Eireli",
+      "qty_ordered": 2.0,
+      "qty_sold": 0.0,
+      "leftover": 2.0
+    },
+    {
+      "ref": "1913030151",
+      "product": "Riva Biju Centro de Mesa 60x14x24 R04998 Inox",
+      "supplier": "BR Comércio de Utensílios Domésticos Eireli",
+      "qty_ordered": 2.0,
+      "qty_sold": 0.0,
+      "leftover": 2.0
+    },
+    {
+      "ref": "1931630097",
+      "product": "Black Grand Palms Set Guardanapos Papel Rect. 15932G",
+      "supplier": "CASPARI ApS",
+      "qty_ordered": 12.0,
+      "qty_sold": 10.0,
+      "leftover": 2.0
+    },
+    {
+      "ref": "1913677404",
+      "product": "Sink Side Escorredor de Louça 11 74 04 Cinza Escuro",
+      "supplier": "Brabantia Internacional Bv",
+      "qty_ordered": 5.0,
+      "qty_sold": 3.0,
+      "leftover": 2.0
+    },
+    {
+      "ref": "1933490003",
+      "product": "X-Mas Prato c/Pé Gengibre Ø24x8.5 NEW-0605 Branco/Vermelho",
+      "supplier": "ELLEGIFT SOCIETA´ A RESPONSABILITA´ LIMITATA SEMPLIFICA",
+      "qty_ordered": 12.0,
+      "qty_sold": 10.0,
+      "leftover": 2.0
+    },
+    {
+      "ref": "1927790003",
+      "product": "Nebula Candeeiro c/AbatJour Duplo Branco 24x30 Cinza Reativo",
+      "supplier": "M. CAMPOS SILVA - ESTOFOS, LDA",
+      "qty_ordered": 5.0,
+      "qty_sold": 3.0,
+      "leftover": 2.0
+    },
+    {
+      "ref": "1928730071",
+      "product": "Capitoné Cesto de Pão Dourado",
+      "supplier": "Elsa Renata de Ascenção Almeida",
+      "qty_ordered": 8.0,
+      "qty_sold": 6.0,
+      "leftover": 2.0
+    },
+    {
+      "ref": "1931630098",
+      "product": "Black Grand Palms Set Guardanapos Papel 15932L",
+      "supplier": "CASPARI ApS",
+      "qty_ordered": 12.0,
+      "qty_sold": 10.0,
+      "leftover": 2.0
+    },
+    {
+      "ref": "1933490001",
+      "product": "X-Mas Meninos Cantores c/Candeeiro&Led 35cm NEV-0625 Verde/V",
+      "supplier": "ELLEGIFT SOCIETA´ A RESPONSABILITA´ LIMITATA SEMPLIFICA",
+      "qty_ordered": 8.0,
+      "qty_sold": 6.0,
+      "leftover": 2.0
+    },
+    {
+      "ref": "1929870001",
+      "product": "Elitis Almofada Paul -Hibiscus 40x55cm CO 258 34 02",
+      "supplier": "ELITIS",
+      "qty_ordered": 2.0,
+      "qty_sold": 0.0,
+      "leftover": 2.0
+    }
+  ]
+}
