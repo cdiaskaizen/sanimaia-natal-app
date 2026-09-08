@@ -2,14 +2,13 @@ import { db } from "./db.js";
 import { requireSession } from "./auth.js";
 import { AREAS, STATUS, GENERAL_NOTES } from "./seed-data.js";
 import {
-  uid, todayISO, parseISO, formatDatePT, formatMonthLabel, isoWeekToDate,
-  effectiveStatus, escapeHtml, groupBy, MONTHS_PT,
+  uid, todayISO, parseISO, formatDatePT,
+  effectiveStatus, escapeHtml,
 } from "./utils.js";
 
 const root = document.getElementById("app");
 let CACHE = {};
 let PHC = null; // snapshot mais recente do PHC (js/phc-snapshot.json), null se ainda não sincronizado
-let calendarCursor = { year: 2026, month: 9 }; // outubro 2026 (0-indexed)
 
 async function loadPhcSnapshot() {
   try {
@@ -23,7 +22,6 @@ async function loadPhcSnapshot() {
 
 const NAV = [
   { id: "dashboard", label: "Dashboard", icon: "grid" },
-  { id: "calendar", label: "Calendário", icon: "calendar" },
   { id: "actions", label: "Ações", icon: "check" },
   { id: "warehouse", label: "Armazém & Fornecedores", icon: "box" },
   { id: "marketing", label: "Marketing", icon: "megaphone" },
@@ -32,13 +30,13 @@ const NAV = [
 ];
 
 async function loadAll() {
-  const [actions, suppliers, stores, events, marketingPosts, windowJobs, windowTeam, restockRules, restockShipments, lessons, stockItems] =
+  const [actions, suppliers, stores, marketingPosts, windowJobs, windowTeam, restockRules, restockShipments, lessons, stockItems] =
     await Promise.all([
-      db.actions.list(), db.suppliers.list(), db.stores.list(), db.events.list(),
+      db.actions.list(), db.suppliers.list(), db.stores.list(),
       db.marketingPosts.list(), db.windowJobs.list(), db.windowTeam.list(),
       db.restockRules.list(), db.restockShipments.list(), db.lessons.list(), db.stockItems.list(),
     ]);
-  CACHE = { actions, suppliers, stores, events, marketingPosts, windowJobs, windowTeam, restockRules, restockShipments, lessons, stockItems };
+  CACHE = { actions, suppliers, stores, marketingPosts, windowJobs, windowTeam, restockRules, restockShipments, lessons, stockItems };
 }
 
 function iconSvg(name) {
@@ -157,7 +155,7 @@ function renderDashboard() {
       </div>
 
       <div class="panel">
-        <div class="panel-header"><h2>Aberturas de loja</h2><a href="#calendar" class="link">Ver calendário →</a></div>
+        <div class="panel-header"><h2>Aberturas de loja</h2></div>
         <div class="list">
           ${stores.sort((a, b) => a.opening_date.localeCompare(b.opening_date)).map((s) => {
             const dl = daysLeft(s.opening_date);
@@ -190,171 +188,6 @@ function renderDashboard() {
       </div>
     </section>
   `;
-}
-
-// ---------- CALENDAR ----------
-function buildCalendarItems(year, month) {
-  const items = [];
-  for (const a of CACHE.actions) {
-    if (!a.due_date) continue;
-    const d = parseISO(a.due_date);
-    if (d.getFullYear() === year && d.getMonth() === month) {
-      items.push({ kind: "action", id: a.id, date: a.due_date, precision: a.due_precision, title: a.title, meta: a.responsible, color: AREAS[a.area]?.color, ref: a });
-    }
-  }
-  for (const s of CACHE.stores) {
-    const d = parseISO(s.opening_date);
-    if (d.getFullYear() === year && d.getMonth() === month) {
-      items.push({ kind: "store", id: s.id, date: s.opening_date, precision: "day", title: `Abertura: ${s.name}`, meta: "Loja", color: "#103273", ref: s });
-    }
-  }
-  for (const e of CACHE.events) {
-    const start = parseISO(e.date);
-    const end = parseISO(e.end_date || e.date);
-    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-      if (d.getFullYear() === year && d.getMonth() === month) {
-        const isMultiDay = e.end_date && e.end_date !== e.date;
-        const dayIso = d.toISOString().slice(0, 10);
-        items.push({
-          kind: "event", id: e.id, date: dayIso, precision: "day", title: e.title,
-          meta: e.flagged ? "⚠ data por confirmar" : (isMultiDay ? `${formatDatePT(e.date)} — ${formatDatePT(e.end_date)}` : ""),
-          color: "#b5384d", ref: e,
-        });
-      }
-    }
-  }
-  for (const p of CACHE.marketingPosts) {
-    if (!p.date) continue;
-    const d = parseISO(p.date);
-    if (d.getFullYear() === year && d.getMonth() === month) {
-      items.push({ kind: "marketing", id: p.id, date: p.date, precision: "day", title: p.title, meta: p.channel || "Marketing", color: "#b5384d", ref: p });
-    }
-  }
-  for (const w of CACHE.windowJobs) {
-    if (!w.date) continue;
-    const d = parseISO(w.date);
-    if (d.getFullYear() === year && d.getMonth() === month) {
-      items.push({ kind: "window", id: w.id, date: w.date, precision: "day", title: `Montra: ${w.client}`, meta: w.assigned_to || "", color: "#3a5a8c", ref: w });
-    }
-  }
-  return items;
-}
-
-function renderCalendar() {
-  const { year, month } = calendarCursor;
-  const items = buildCalendarItems(year, month);
-  const dayItems = items.filter((i) => i.precision === "day");
-  const weekItems = items.filter((i) => i.precision === "week");
-  const monthItems = items.filter((i) => i.precision === "month");
-
-  const byDay = groupBy(dayItems, (i) => parseISO(i.date).getDate());
-  for (const wi of weekItems) {
-    const monday = parseISO(wi.date);
-    const dayNum = monday.getDate();
-    (byDay[dayNum] ||= []).push(wi);
-  }
-
-  const firstOfMonth = new Date(year, month, 1);
-  const startWeekday = (firstOfMonth.getDay() + 6) % 7; // segunda = 0
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const todayIso = todayISO();
-
-  let cells = "";
-  for (let i = 0; i < startWeekday; i++) cells += `<div class="cal-cell cal-cell-empty"></div>`;
-  for (let day = 1; day <= daysInMonth; day++) {
-    const iso = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-    const isToday = iso === todayIso;
-    const dayList = byDay[day] || [];
-    cells += `<div class="cal-cell cal-cell-addable ${isToday ? "cal-cell-today" : ""}" data-day="${iso}" title="Clicar para criar um evento neste dia">
-      <div class="cal-daynum">${day}</div>
-      <div class="cal-chips">
-        ${dayList.slice(0, 3).map((i) => `<div class="cal-chip cal-chip-clickable" data-cal-kind="${i.kind}" data-cal-id="${i.id}" style="background:${i.color}22;border-left:3px solid ${i.color}" title="${escapeHtml(i.title)} (clicar para editar)">${escapeHtml(i.title)}</div>`).join("")}
-        ${dayList.length > 3 ? `<div class="cal-chip-more">+${dayList.length - 3}</div>` : ""}
-      </div>
-    </div>`;
-  }
-
-  return `
-    <header class="view-header">
-      <div>
-        <h1>Calendário</h1>
-        <p class="muted">Aberturas de loja, prazos de ações e marketing num único calendário</p>
-      </div>
-      <div class="cal-nav">
-        <button class="btn btn-ghost" id="cal-prev">←</button>
-        <div class="cal-month-label">${MONTHS_PT[month]} ${year}</div>
-        <button class="btn btn-ghost" id="cal-next">→</button>
-        <button class="btn btn-sm" id="cal-add-store">+ Loja</button>
-        <button class="btn btn-sm" id="cal-add-event">+ Evento</button>
-      </div>
-    </header>
-
-    <div class="cal-grid-header">
-      ${["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"].map((d) => `<div>${d}</div>`).join("")}
-    </div>
-    <div class="cal-grid">${cells}</div>
-
-    ${monthItems.length ? `
-      <div class="panel" style="margin-top:16px">
-        <div class="panel-header"><h2>Sem data exata em ${MONTHS_PT[month]}</h2></div>
-        <div class="list">
-          ${monthItems.map((i) => `<div class="list-row cal-chip-clickable" data-cal-kind="${i.kind}" data-cal-id="${i.id}">
-            <span class="dot" style="background:${i.color}"></span>
-            <div class="list-row-main">
-              <div class="list-row-title">${escapeHtml(i.title)}</div>
-              <div class="list-row-sub">${escapeHtml(i.meta || "")}</div>
-            </div>
-          </div>`).join("")}
-        </div>
-      </div>` : ""}
-  `;
-}
-
-function storeFormHtml(s) {
-  const v = s || { name: "", opening_date: "", notes: "" };
-  return `
-    <label>Loja<input type="text" name="name" value="${escapeHtml(v.name)}" required /></label>
-    <label>Data de abertura<input type="date" name="opening_date" value="${v.opening_date || ""}" required /></label>
-    <label>Notas<textarea name="notes" rows="2">${escapeHtml(v.notes || "")}</textarea></label>
-  `;
-}
-
-function eventFormHtml(e) {
-  const v = e || { title: "", date: "", end_date: "", flagged: false, notes: "" };
-  return `
-    <label>Título<input type="text" name="title" value="${escapeHtml(v.title)}" required /></label>
-    <div class="form-row">
-      <label>Data de início<input type="date" name="date" value="${v.date || ""}" required /></label>
-      <label>Data de fim (opcional, para vários dias)<input type="date" name="end_date" value="${v.end_date || ""}" /></label>
-    </div>
-    <label>Notas<textarea name="notes" rows="2">${escapeHtml(v.notes || "")}</textarea></label>
-  `;
-}
-
-function openNewEventModal(prefillDate) {
-  openModal({
-    title: "Novo evento",
-    bodyHtml: eventFormHtml(prefillDate ? { title: "", date: prefillDate, end_date: "", notes: "" } : null),
-    onSubmit: async (data) => { await db.events.insert({ ...data, end_date: data.end_date || null, flagged: false }); toast("Evento criado."); },
-  });
-}
-
-function openCalendarItem(kind, id) {
-  if (kind === "action") {
-    const a = CACHE.actions.find((x) => x.id === id);
-    openActionEditModal(a);
-  } else if (kind === "store") {
-    const s = CACHE.stores.find((x) => x.id === id);
-    openModal({ title: "Editar loja", bodyHtml: storeFormHtml(s), onSubmit: async (data) => { await db.stores.update(s.id, data); toast("Loja atualizada."); } });
-  } else if (kind === "event") {
-    const e = CACHE.events.find((x) => x.id === id);
-    openModal({ title: "Editar evento", bodyHtml: eventFormHtml(e), onSubmit: async (data) => { await db.events.update(e.id, { ...data, end_date: data.end_date || null, flagged: e.flagged }); toast("Evento atualizado."); } });
-  } else if (kind === "marketing") {
-    const p = CACHE.marketingPosts.find((x) => x.id === id);
-    openModal({ title: "Editar post/campanha", bodyHtml: postFormHtml(p), onSubmit: async (data) => { await db.marketingPosts.update(p.id, data); toast("Post atualizado."); } });
-  } else if (kind === "window") {
-    location.hash = "#windows";
-  }
 }
 
 // ---------- ACTIONS ----------
@@ -1122,7 +955,7 @@ function render() {
   const route = currentRoute();
 
   const renderers = {
-    dashboard: renderDashboard, calendar: renderCalendar, actions: renderActions,
+    dashboard: renderDashboard, actions: renderActions,
     warehouse: renderWarehouse, marketing: renderMarketing,
     windows: renderWindows, lessons: renderLessons,
   };
@@ -1131,32 +964,6 @@ function render() {
 }
 
 function bindEvents(route, view) {
-  if (route === "calendar") {
-    document.getElementById("cal-prev").onclick = () => {
-      calendarCursor.month -= 1;
-      if (calendarCursor.month < 0) { calendarCursor.month = 11; calendarCursor.year -= 1; }
-      render();
-    };
-    document.getElementById("cal-next").onclick = () => {
-      calendarCursor.month += 1;
-      if (calendarCursor.month > 11) { calendarCursor.month = 0; calendarCursor.year += 1; }
-      render();
-    };
-    document.getElementById("cal-add-store").onclick = () => {
-      openModal({ title: "Nova loja", bodyHtml: storeFormHtml(null), onSubmit: async (data) => { await db.stores.insert(data); toast("Loja criada."); } });
-    };
-    document.getElementById("cal-add-event").onclick = () => openNewEventModal(null);
-    view.querySelectorAll("[data-cal-kind]").forEach((el) => {
-      el.onclick = (e) => { e.stopPropagation(); openCalendarItem(el.dataset.calKind, el.dataset.calId); };
-    });
-    view.querySelectorAll(".cal-cell-addable").forEach((cell) => {
-      cell.onclick = (e) => {
-        if (e.target.closest("[data-cal-kind]")) return;
-        openNewEventModal(cell.dataset.day);
-      };
-    });
-  }
-
   if (route === "actions") {
     document.getElementById("action-search").oninput = (e) => { actionFilters.q = e.target.value; render(); };
     view.querySelectorAll("[data-area-tab]").forEach((btn) => {
