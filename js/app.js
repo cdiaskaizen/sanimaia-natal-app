@@ -339,20 +339,38 @@ function openCalendarItem(kind, id) {
 }
 
 // ---------- ACTIONS ----------
-let actionFilters = { area: "all", status: "all", q: "" };
+let actionFilters = { area: "all", responsibles: [], q: "" };
+
+// "Teresa e Helena", "Rui + Ana", "Maria, Sandra" -> ["Teresa","Helena"] etc.
+function parseResponsibles(str) {
+  return (str || "")
+    .split(/\s*(?:,|&|\+|\/| e )\s*/i)
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
+function allResponsiblesList() {
+  const set = new Set();
+  CACHE.actions.forEach((a) => parseResponsibles(a.responsible).forEach((r) => set.add(r)));
+  return [...set].sort((a, b) => a.localeCompare(b, "pt"));
+}
 
 function renderActions() {
   // Planeado / Em Curso / Concluído são manuais (arrastar fica). Atrasado é
   // sempre automático (prazo passado + ainda não em curso/concluído).
   let list = CACHE.actions.map((a) => ({ ...a, eff: effectiveStatus(a) }));
   if (actionFilters.area !== "all") list = list.filter((a) => a.area === actionFilters.area);
-  if (actionFilters.status !== "all") list = list.filter((a) => a.eff === actionFilters.status);
+  if (actionFilters.responsibles.length) {
+    list = list.filter((a) => parseResponsibles(a.responsible).some((r) => actionFilters.responsibles.includes(r)));
+  }
   if (actionFilters.q) {
     const q = actionFilters.q.toLowerCase();
     list = list.filter((a) => a.title.toLowerCase().includes(q) || a.responsible.toLowerCase().includes(q));
   }
 
   const columns = ["planeado", "em_curso", "atrasado", "concluido"];
+  const areaTabs = [["all", "Todas"], ...Object.entries(AREAS).filter(([k]) => k !== "GERAL")];
+  const people = allResponsiblesList();
 
   return `
     <header class="view-header">
@@ -363,16 +381,25 @@ function renderActions() {
       <button class="btn btn-primary" id="btn-add-action">+ Nova ação</button>
     </header>
 
+    <div class="area-tabs">
+      ${areaTabs.map(([k, v]) => `<button class="area-tab ${actionFilters.area === k ? "active" : ""}" data-area-tab="${k}">${typeof v === "string" ? v : v.label}</button>`).join("")}
+    </div>
+
     <div class="toolbar">
       <input type="text" id="action-search" placeholder="Pesquisar ação ou responsável…" value="${escapeHtml(actionFilters.q)}" />
-      <select id="filter-area">
-        <option value="all">Todas as áreas</option>
-        ${Object.entries(AREAS).filter(([k]) => k !== "GERAL").map(([k, v]) => `<option value="${k}" ${actionFilters.area === k ? "selected" : ""}>${v.label}</option>`).join("")}
-      </select>
-      <select id="filter-status">
-        <option value="all">Todos os estados</option>
-        ${Object.entries(STATUS).map(([k, v]) => `<option value="${k}" ${actionFilters.status === k ? "selected" : ""}>${v.label}</option>`).join("")}
-      </select>
+      <div class="multiselect" id="responsible-multiselect">
+        <button type="button" class="btn btn-ghost multiselect-toggle" id="responsible-toggle">
+          ${actionFilters.responsibles.length ? `${actionFilters.responsibles.length} responsável(is) ▾` : "Todos os responsáveis ▾"}
+        </button>
+        <div class="multiselect-panel" id="responsible-panel" hidden>
+          ${people.map((p) => `
+            <label class="multiselect-option">
+              <input type="checkbox" value="${escapeHtml(p)}" ${actionFilters.responsibles.includes(p) ? "checked" : ""} />
+              ${escapeHtml(p)}
+            </label>
+          `).join("") || '<p class="muted small" style="padding:8px 12px">Sem responsáveis ainda.</p>'}
+        </div>
+      </div>
     </div>
 
     <p class="muted small">Arrasta os cartões entre colunas. "Atrasado" é automático (prazo passado) — arrasta para Em Curso ou Concluído para o tirar de lá.</p>
@@ -1137,8 +1164,21 @@ function bindEvents(route, view) {
 
   if (route === "actions") {
     document.getElementById("action-search").oninput = (e) => { actionFilters.q = e.target.value; render(); };
-    document.getElementById("filter-area").onchange = (e) => { actionFilters.area = e.target.value; render(); };
-    document.getElementById("filter-status").onchange = (e) => { actionFilters.status = e.target.value; render(); };
+    view.querySelectorAll("[data-area-tab]").forEach((btn) => {
+      btn.onclick = () => { actionFilters.area = btn.dataset.areaTab; render(); };
+    });
+    const toggle = document.getElementById("responsible-toggle");
+    const panel = document.getElementById("responsible-panel");
+    toggle.onclick = (e) => { e.stopPropagation(); panel.hidden = !panel.hidden; };
+    panel.querySelectorAll('input[type="checkbox"]').forEach((cb) => {
+      cb.onchange = () => {
+        const val = cb.value;
+        if (cb.checked) actionFilters.responsibles.push(val);
+        else actionFilters.responsibles = actionFilters.responsibles.filter((r) => r !== val);
+        render();
+        document.getElementById("responsible-panel").hidden = false;
+      };
+    });
     document.getElementById("btn-add-action").onclick = () => {
       openModal({
         title: "Nova ação", bodyHtml: actionFormHtml(null),
@@ -1400,6 +1440,16 @@ function bindEvents(route, view) {
 }
 
 window.addEventListener("hashchange", render);
+
+// Fecha o dropdown de responsáveis ao clicar fora dele (registado uma única
+// vez — o painel é recriado a cada render, mas o document nunca é).
+document.addEventListener("click", (e) => {
+  const panel = document.getElementById("responsible-panel");
+  const toggle = document.getElementById("responsible-toggle");
+  if (panel && !panel.hidden && !panel.contains(e.target) && e.target !== toggle) {
+    panel.hidden = true;
+  }
+});
 
 async function boot() {
   await requireSession(); // sem login — acesso aberto a toda a gente
