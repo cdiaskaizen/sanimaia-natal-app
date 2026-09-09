@@ -274,7 +274,16 @@ function renderActions() {
                   <span>${escapeHtml(a.responsible)}</span>
                   <span>${escapeHtml(a.due_raw)}</span>
                 </div>
-                ${a.comments && a.comments.length ? `<div class="comment-count">💬 ${a.comments.length}</div>` : ""}
+                ${a.comments && a.comments.length ? `
+                  <div class="action-card-comments">
+                    ${a.comments.slice().reverse().map((c) => `
+                      <div class="action-card-comment">
+                        <span class="action-card-comment-text">${escapeHtml(c.text)}</span>
+                        <span class="action-card-comment-date">${formatDateTimePT(c.created_at)}</span>
+                      </div>
+                    `).join("")}
+                  </div>
+                ` : ""}
                 <div class="action-card-actions">
                   <button class="icon-btn" data-edit="${a.id}" title="Editar">✎</button>
                   <button class="icon-btn icon-btn-danger" data-del="${a.id}" title="Eliminar">🗑</button>

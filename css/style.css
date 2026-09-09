@@ -273,7 +273,13 @@ textarea { resize: vertical; }
 }
 .action-card-meta { display: flex; justify-content: space-between; font-size: 0.74rem; color: hsl(var(--muted)); }
 .action-card-actions { display: flex; justify-content: flex-end; gap: 2px; margin-top: 6px; }
-.comment-count { font-size: 0.72rem; color: hsl(var(--muted)); margin-top: 4px; }
+.action-card-comments { display: flex; flex-direction: column; gap: 4px; margin-top: 8px; }
+.action-card-comment {
+  background: hsl(var(--secondary) / 0.6); border-radius: 6px; padding: 5px 8px;
+  font-size: 0.76rem; display: flex; flex-direction: column; gap: 1px;
+}
+.action-card-comment-text { overflow-wrap: break-word; }
+.action-card-comment-date { font-size: 0.66rem; color: hsl(var(--muted)); }
 
 .comments-section { margin-top: 4px; border-top: 1px solid hsl(var(--border)); padding-top: 12px; }
 .comments-list { display: flex; flex-direction: column; gap: 6px; max-height: 160px; overflow-y: auto; margin-bottom: 8px; }
